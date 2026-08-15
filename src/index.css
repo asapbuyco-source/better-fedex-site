@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --fedex-purple: #4d148c;
+    --fedex-purple-dark: #330066;
+    --fedex-orange: #ff6200;
+    --fedex-orange-hover: #e05500;
+    --fedex-blue: #0068a8;
+    --fedex-gray-light: #f2f2f2;
+    --fedex-gray-card: #ffffff;
+    --fedex-text: #333333;
+  }
+
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--fedex-text);
+    background-color: #fafafa; /* FedEx generally uses a very light gray or white background */
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom focus ring for accessibility */
+.fedex-focus {
+  outline: 2px solid var(--fedex-orange);
+  outline-offset: 2px;
+}
+
+/* Button & Dropdown transition effects */
+.fedex-dropdown-shadow {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.fedex-card-shadow {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.fedex-card-shadow-hover {
+  transition: all 0.25s ease-in-out;
+}
+
+.fedex-card-shadow-hover:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--fedex-purple);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fedex-purple-dark);
+}
