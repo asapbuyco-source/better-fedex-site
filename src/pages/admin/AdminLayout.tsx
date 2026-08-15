@@ -99,7 +99,7 @@ const AdminLoginInline: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) =>
     if (authService.backend === 'firebase' && email.trim()) {
       try {
         const user = await authService.signIn(email.trim(), password);
-        if (!authService.isAdminEmail(user.email)) {
+        if (!(await authService.isAdminEmail(user.email))) {
           await authService.signOut();
           setError('This account does not have admin access.');
           setBusy(false);
@@ -167,7 +167,7 @@ const AdminLoginInline: React.FC<{ onSuccess: () => void }> = ({ onSuccess }) =>
 
         <p className="text-[11px] text-gray-400 mt-4 text-center leading-relaxed">
           {authService.backend === 'firebase'
-            ? <>Admin account: <code className="font-mono font-bold text-[#4D148C]">admin@fedex.com</code></>
+            ? <>Admin account: <code className="font-mono font-bold text-[#4D148C]">admin@fedex.com</code><br />Add more admins via the Firestore <code className="font-mono">admins</code> collection (doc ID = email).</>
             : <>Demo password: <code className="font-mono font-bold text-[#4D148C]">admin123</code></>}
         </p>
       </div>

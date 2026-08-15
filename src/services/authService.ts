@@ -1,6 +1,6 @@
-import { isFirebaseConfigured, getAuthInstance } from '../utils/firebase';
+import { isFirebaseConfigured, getAuthInstance, getDb, withTimeout } from '../utils/firebase';
 
-/** Emails allowed into the admin console (Firebase Auth accounts). */
+/** Fallback admin emails (always allowed even without Firestore). */
 export const ADMIN_EMAILS = ['admin@fedex.com', 'adminmain@gmail.com'];
 
 export interface AuthUser {
@@ -115,7 +115,26 @@ export const authService = {
     });
   },
 
-  isAdminEmail(email: string): boolean {
-    return ADMIN_EMAILS.includes(email.toLowerCase().trim());
+  /**
+   * Admin check. Allowed if the email is in ADMIN_EMAILS, or if a document
+   * exists in the Firestore 'admins' collection with the email as its ID
+   * (e.g. admins/admin@fedex.com — any field or an empty doc works).
+   */
+  async isAdminEmail(email: string): Promise<boolean> {
+    const clean = email.toLowerCase().trim();
+    if (ADMIN_EMAILS.includes(clean)) return true;
+    if (isFirebaseConfigured()) {
+      try {
+        const db = getDb();
+        if (db) {
+          const { doc, getDoc } = await import('firebase/firestore');
+          const snap = await withTimeout(getDoc(doc(db, 'admins', clean)), 3000);
+          return snap.exists();
+        }
+      } catch (e) {
+        console.warn('Firestore admin check failed.', e);
+      }
+    }
+    return false;
   }
 };
