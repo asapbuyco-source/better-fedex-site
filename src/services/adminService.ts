@@ -63,12 +63,13 @@ function writeAll(shipments: AdminShipment[]) {
 }
 
 /**
- * One-time sample shipment so a fresh install has something complete to track.
- * Only seeds when no admin shipments exist yet.
+ * Sample shipment so a fresh install always has something complete to track.
+ * Upserts (never overwrites user data); adds the sample only if its number is missing.
  */
 export function seedSampleShipment() {
   try {
-    if (localStorage.getItem(SHIPMENTS_KEY)) return;
+    const all = readAll();
+    if (all.some(s => s.trackingNumber === '794612345678')) return;
     const now = new Date();
     const yesterday = new Date(now.getTime() - 86400000);
     const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -102,7 +103,7 @@ export function seedSampleShipment() {
       recipientName: 'Jordan Lee',
       recipientEmail: 'jordan.lee@example.com'
     };
-    writeAll([sample]);
+    writeAll([sample, ...all]);
     void persistShipment(sample);
   } catch { /* ignore */ }
 }

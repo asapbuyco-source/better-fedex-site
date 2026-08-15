@@ -48,7 +48,7 @@ export const SupportPage: React.FC = () => {
       'Sent to the FedEx Virtual Assistant'
     );
     if (t.includes('agent') || t.includes('human') || t.includes('call')) {
-      reply = 'You can reach us 24/7 at 1.800.GoFedEx (1.800.463.3339), or say "email" for the contact form.';
+      reply = 'You can reach us 24/7 at +1 (773) 331-9396 (or toll-free 1.800.GoFedEx / 1.800.463.3339), or say "email" for the contact form.';
     } else if (t.includes('track') || t.includes('where')) {
       reply = 'To track a package, head to the Tracking page and enter your tracking number. It starts with the number on your shipping label.';
     } else if (t.includes('rate') || t.includes('cost') || t.includes('price')) {
@@ -186,9 +186,12 @@ export const SupportPage: React.FC = () => {
               <div className="flex items-center gap-3 text-sm text-purple-900">
                 <Phone className="w-5 h-5 shrink-0" />
                 <div>
-                  <div className="font-bold">1.800.GoFedEx</div>
-                  <div className="text-xs">1.800.463.3339 — available 24/7</div>
+                  <a href="tel:+17733319396" className="font-bold hover:underline">+1 (773) 331-9396</a>
+                  <div className="text-xs">Available 24/7 — call or text</div>
                 </div>
+              </div>
+              <div className="text-xs text-purple-700 border-t border-purple-100 pt-2">
+                Also toll-free: 1.800.GoFedEx (1.800.463.3339)
               </div>
               <Link to="/support/claims" className="block py-2.5 px-4 bg-white border border-purple-200 hover:border-[#4D148C] rounded text-xs font-bold text-[#4D148C] text-center transition-colors">
                 File a Claim Online

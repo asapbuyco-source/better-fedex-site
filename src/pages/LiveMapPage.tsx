@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -157,8 +157,11 @@ function buildFromDetail(d: TrackingDetail, source: 'customer' | 'tracked'): Map
 function MapAutoFit({ shipments }: { shipments: MapShipment[] }) {
   const map = useMap();
   const fitRef = useRef(0);
+  const prevCount = useRef(shipments.length);
   useEffect(() => {
-    if (shipments.length > 0 && fitRef.current < 2) {
+    const grew = shipments.length > prevCount.current;
+    prevCount.current = shipments.length;
+    if (shipments.length > 0 && (fitRef.current < 2 || grew)) {
       fitRef.current++;
       const pts = shipments.flatMap(s => s.route);
       if (pts.length > 0) {
@@ -169,23 +172,72 @@ function MapAutoFit({ shipments }: { shipments: MapShipment[] }) {
   return null;
 }
 
-const LiveMapContent: React.FC = () => {
+/** Rebuild the shipment list from localStorage, preserving live progress for known codes. */
+function mergeShipments(prev: MapShipment[]): MapShipment[] {
+  const fresh = buildShipments();
+  const prevByCode = new Map(prev.map(s => [s.code, s]));
+  return fresh.map(s => {
+    const old = prevByCode.get(s.code);
+    return old ? { ...s, progress: Math.max(s.progress, old.progress) } : s;
+  });
+}
+
+/** Zoom straight to a specific shipment (used with ?focus=<trackingNumber>). */
+function FocusFit({ shipments, code }: { shipments: MapShipment[]; code?: string }) {
+  const map = useMap();
+  const doneRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!code || doneRef.current === code) return;
+    const s = shipments.find(x => x.code === code);
+    if (s && s.route.length > 0) {
+      doneRef.current = code;
+      map.fitBounds(L.latLngBounds(s.route.map(p => [p.lat, p.lng] as [number, number])).pad(0.25), { animate: true });
+    }
+  }, [shipments, code, map]);
+  return null;
+}
+
+const LiveMapContent: React.FC<{ focusCode?: string }> = ({ focusCode }) => {
   const [shipments, setShipments] = useState<MapShipment[]>(() => buildShipments());
   const [tick, setTick] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(focusCode ?? null);
 
   useEffect(() => {
     if (paused) return;
+    let count = 0;
     const id = setInterval(() => {
-      setShipments(prev => prev.map(s => ({
-        ...s,
-        progress: Math.min(1, s.progress + s.speed)
-      })));
+      count++;
+      setShipments(prev => {
+        const next = prev.map(s => ({
+          ...s,
+          progress: Math.min(1, s.progress + s.speed)
+        }));
+        return count % 5 === 0 ? mergeShipments(next) : next;
+      });
       setTick(t => t + 1);
     }, 2200);
     return () => clearInterval(id);
   }, [paused]);
+
+  // Pick up newly tracked/created shipments: localStorage changes in other tabs,
+  // tab refocus, and page visibility changes
+  useEffect(() => {
+    const rebuild = () => setShipments(prev => mergeShipments(prev));
+    const onStorage = (e: StorageEvent) => {
+      if (!e.key || e.key.includes('fedex')) rebuild();
+    };
+    const onFocus = () => rebuild();
+    const onVisible = () => { if (!document.hidden) rebuild(); };
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
 
   const active = useMemo(() => shipments.filter(s => s.progress < 1).length, [shipments, tick]);
 
@@ -209,6 +261,7 @@ const LiveMapContent: React.FC = () => {
               />
 
               <MapAutoFit shipments={shipments} />
+              <FocusFit shipments={shipments} code={focusCode} />
 
               {shipments.map(s => {
                 const pos = pointAlongRoute(s.route, s.progress);
@@ -331,7 +384,10 @@ const LiveMapContent: React.FC = () => {
   );
 };
 
-export const LiveMapPage: React.FC = () => (
+export const LiveMapPage: React.FC = () => {
+  const [params] = useSearchParams();
+  const focus = params.get('focus') || undefined;
+  return (
   <div>
     <div className="bg-gradient-to-r from-[#4D148C] to-[#330066] text-white">
       <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-8 md:py-10">
@@ -346,10 +402,11 @@ export const LiveMapPage: React.FC = () => (
       </div>
     </div>
     <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-6">
-      <LiveMapContent />
+      <LiveMapContent focusCode={focus} />
     </div>
   </div>
-);
+  );
+};
 
 export const AdminLiveMapPage: React.FC = () => (
   <div>

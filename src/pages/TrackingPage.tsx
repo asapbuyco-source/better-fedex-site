@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { trackingService, TrackingDetail } from '../services/trackingService';
 import { PageHero } from '../components/Page/PageHero';
+import { MapPreview } from '../components/MapPreview/MapPreview';
 import { Package, CheckCircle2, Clock, MapPin, Truck, AlertTriangle, Printer, ShieldCheck, Search, History, X } from 'lucide-react';
 
 const TrackingDetailView: React.FC<{ detail: TrackingDetail }> = ({ detail }) => {
@@ -33,13 +34,21 @@ const TrackingDetailView: React.FC<{ detail: TrackingDetail }> = ({ detail }) =>
             <div className="text-lg sm:text-xl font-mono font-bold tracking-wide">{detail.trackingNumber}</div>
           </div>
         </div>
-        <button
-          onClick={() => window.print()}
-          className="p-2 text-purple-200 hover:text-white rounded-lg hover:bg-white/10"
-          title="Print status"
-        >
-          <Printer className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            to={`/live-map?focus=${detail.trackingNumber}`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-lg transition-colors"
+          >
+            <MapPin className="w-4 h-4 text-[#FF6600]" /> View on Live Map
+          </Link>
+          <button
+            onClick={() => window.print()}
+            className="p-2 text-purple-200 hover:text-white rounded-lg hover:bg-white/10"
+            title="Print status"
+          >
+            <Printer className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="p-4 sm:p-6 space-y-6">
@@ -132,6 +141,22 @@ const TrackingDetailView: React.FC<{ detail: TrackingDetail }> = ({ detail }) =>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Mini live map */}
+        <div className="border-t border-gray-100 pt-5">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[#4D148C]" /> Live Location
+            </h4>
+            <Link
+              to={`/live-map?focus=${detail.trackingNumber}`}
+              className="inline-flex items-center gap-1 text-xs font-bold text-[#0068A8] hover:underline"
+            >
+              View on Full Map →
+            </Link>
+          </div>
+          <MapPreview detail={detail} />
         </div>
       </div>
     </div>
