@@ -9,6 +9,8 @@ export interface AdminShipment extends TrackingDetail {
   createdAt: string;
   recipientName?: string;
   senderName?: string;
+  recipientEmail?: string;
+  senderEmail?: string;
 }
 
 const SHIPMENTS_KEY = 'fedex_admin_shipments';
@@ -58,6 +60,51 @@ function writeAll(shipments: AdminShipment[]) {
   } catch (e) {
     console.error(e);
   }
+}
+
+/**
+ * One-time sample shipment so a fresh install has something complete to track.
+ * Only seeds when no admin shipments exist yet.
+ */
+export function seedSampleShipment() {
+  try {
+    if (localStorage.getItem(SHIPMENTS_KEY)) return;
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 86400000);
+    const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const fmtTime = (d: Date) => d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const sample: AdminShipment = {
+      trackingNumber: '794612345678',
+      status: 'In Transit',
+      statusColor: 'purple',
+      statusDescription: 'Arrived at FedEx hub - on schedule for delivery',
+      estimatedDelivery: 'Tomorrow by 10:30 AM',
+      shipDate: fmtDate(yesterday),
+      origin: 'NASHVILLE, TN US',
+      destination: 'DALLAS, TX US',
+      service: 'FedEx Priority Overnight®',
+      weight: '4.0 lbs / 1.81 kg',
+      dimensions: '12 x 9 x 4 in',
+      pieceCount: 1,
+      progressPercent: 55,
+      events: [
+        { date: fmtDate(now), time: fmtTime(now), status: 'Arrived at FedEx hub', location: 'Memphis, TN', completed: true },
+        { date: fmtDate(yesterday), time: '11:15 PM', status: 'Departed FedEx origin facility', location: 'Nashville, TN', completed: true },
+        { date: fmtDate(yesterday), time: '09:20 AM', status: 'Picked up', location: 'Nashville, TN', completed: true },
+        { date: fmtDate(yesterday), time: '08:05 AM', status: 'Shipment information sent to FedEx', location: 'Nashville, TN', completed: true }
+      ],
+      originCode: 'BNA',
+      destCode: 'DFW',
+      currentCode: 'MEM',
+      createdAt: now.toISOString(),
+      senderName: 'Acme Supply Co.',
+      senderEmail: 'shipping@acmesupply.example',
+      recipientName: 'Jordan Lee',
+      recipientEmail: 'jordan.lee@example.com'
+    };
+    writeAll([sample]);
+    void persistShipment(sample);
+  } catch { /* ignore */ }
 }
 
 export function generateTrackingNumber(): string {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { adminService, AdminShipment, generateTrackingNumber } from '../../services/adminService';
 import { TrackingEvent } from '../../services/trackingService';
+import { emailService } from '../../services/emailService';
 import { FACILITIES, getFacilityByCode } from '../../data/facilities';
 import { Save, ArrowLeft, Plus, Trash2, RefreshCw, Zap } from 'lucide-react';
 
@@ -43,6 +44,8 @@ const emptyForm: Omit<AdminShipment, 'createdAt'> = {
   currentCode: 'MEM',
   recipientName: '',
   senderName: '',
+  recipientEmail: '',
+  senderEmail: '',
 };
 
 export const AdminShipmentFormPage: React.FC = () => {
@@ -138,6 +141,36 @@ export const AdminShipmentFormPage: React.FC = () => {
       statusDescription: p.desc,
       currentCode: p.code
     }));
+    notifyEmail(
+      {
+        ...form,
+        status: p.status,
+        statusColor: p.color,
+        progressPercent: p.progress,
+        statusDescription: p.desc,
+        currentCode: p.code
+      },
+      'updated',
+      `${p.event.status} — ${p.event.location}`
+    );
+  };
+
+  const notifyEmail = (data: Omit<AdminShipment, 'createdAt'>, action: 'created' | 'updated', eventText?: string) => {
+    void emailService.notifyShipment({
+      trackingNumber: data.trackingNumber,
+      status: data.status,
+      statusDescription: data.statusDescription,
+      senderName: data.senderName || 'Shipper',
+      senderEmail: data.senderEmail || '',
+      recipientName: data.recipientName || 'Recipient',
+      recipientEmail: data.recipientEmail || '',
+      origin: data.origin,
+      destination: data.destination,
+      service: data.service,
+      eta: data.estimatedDelivery,
+      eventText,
+      action
+    });
   };
 
   const save = (e: React.FormEvent) => {
@@ -151,6 +184,7 @@ export const AdminShipmentFormPage: React.FC = () => {
       return;
     }
     adminService.createShipment(form);
+    notifyEmail(form, isEdit ? 'updated' : 'created');
     navigate('/admin');
   };
 
@@ -258,8 +292,18 @@ export const AdminShipmentFormPage: React.FC = () => {
           </div>
 
           <div>
+            <label className={labelCls}>Sender Email</label>
+            <input type="email" value={form.senderEmail || ''} onChange={(e) => set('senderEmail', e.target.value)} className={inputCls} placeholder="orders@acme.com" />
+          </div>
+
+          <div>
             <label className={labelCls}>Recipient Name</label>
             <input type="text" value={form.recipientName || ''} onChange={(e) => set('recipientName', e.target.value)} className={inputCls} placeholder="Jane Doe" />
+          </div>
+
+          <div>
+            <label className={labelCls}>Recipient Email</label>
+            <input type="email" value={form.recipientEmail || ''} onChange={(e) => set('recipientEmail', e.target.value)} className={inputCls} placeholder="jane@example.com" />
           </div>
 
           <div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, ArrowUp, Smartphone, Mail } from 'lucide-react';
+import { Globe, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 
@@ -23,7 +23,7 @@ const PinterestIcon = () => (
 );
 
 const SOCIAL_LINKS: { label: string; href: string; Icon: React.ComponentType }[] = [
-  { label: 'Email', href: '#email', Icon: () => <Mail className="w-4 h-4" /> },
+  { label: 'Email', href: 'https://www.fedex.com/en-us/email.html', Icon: () => <Mail className="w-4 h-4" /> },
   { label: 'Facebook', href: 'https://www.facebook.com/FedEx/', Icon: FacebookIcon },
   { label: 'Twitter', href: 'https://twitter.com/fedex', Icon: TwitterIcon },
   { label: 'Instagram', href: 'https://www.instagram.com/fedex/', Icon: InstagramIcon },
@@ -37,83 +37,98 @@ const COMPANY_LINKS: { label: string; to: string }[] = [
   { label: 'Our Portfolio', to: '/about/company' },
   { label: 'Investor Relations', to: '/investors' },
   { label: 'Careers', to: '/careers' },
+  { label: 'Transportation Contracting Opportunities', to: '/careers' },
   { label: 'FedEx Blog', to: '/newsroom' },
   { label: 'Corporate Responsibility', to: '/sustainability' },
   { label: 'Newsroom', to: '/newsroom' },
+  { label: 'Contact Us', to: '/support' },
 ];
 
 const MORE_LINKS: { label: string; to: string }[] = [
   { label: 'FedEx Compatible', to: '/developer' },
   { label: 'FedEx Developer Portal', to: '/developer' },
   { label: 'FedEx Logistics', to: '/shipping/freight' },
-  { label: 'Small Business Center', to: '/small-business' },
-  { label: 'Live Shipment Map', to: '/live-map' },
-  { label: 'Admin Console', to: '/admin' },
+];
+
+const POLICY_LINKS: { label: string; to: string }[] = [
+  { label: 'Terms of Use', to: '/about' },
+  { label: 'Privacy & Security', to: '/support' },
+  { label: 'Ad Choices', to: '/support' },
+  { label: 'Your Privacy Choices', to: '/support' },
 ];
 
 export const Footer: React.FC = () => {
   const { openLanguage } = useApp();
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
-    <footer className="bg-[#000000] text-gray-300 pt-12 pb-8 border-t-4 border-[#FF6600]">
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6">
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-10 border-b border-gray-800">
-          
-          {/* Column 1: Brand & Language */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="font-black text-3xl tracking-tighter flex items-center">
-              <span className="text-white">Fed</span>
-              <span className="text-[#FF6600]">Ex</span>
-            </div>
-            <p className="text-xs text-gray-400 max-w-sm leading-relaxed">
-              Global express shipping, freight logistics, e-commerce tools, and retail printing services. Connecting people and possibilities across 220+ countries and territories.
-            </p>
+    <footer className="bg-[#fafafa]">
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 pt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-8">
 
-            <button
-              onClick={openLanguage}
-              className="mt-2 inline-flex items-center gap-2 px-3.5 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded border border-gray-700 text-xs font-bold transition-colors"
-            >
-              <Globe className="w-4 h-4 text-[#FF6600]" />
-              <span>United States - English</span>
-            </button>
-          </div>
-
-          {/* Column 2: Our Company */}
+          {/* Our Company */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-gray-100">
+            <h4 className="text-xs font-black uppercase tracking-wider text-[#4D148C]">
               OUR COMPANY
             </h4>
-            <ul className="space-y-2 text-xs text-gray-400">
+            <ul className="space-y-2 text-xs text-[#333333]">
               {COMPANY_LINKS.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.to} className="hover:text-white hover:underline">{link.label}</Link>
+                  <Link to={link.to} className="hover:text-[#4D148C] hover:underline">{link.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 3: More From FedEx */}
+          {/* More From FedEx */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-gray-100">
+            <h4 className="text-xs font-black uppercase tracking-wider text-[#4D148C]">
               MORE FROM FEDEX
             </h4>
-            <ul className="space-y-2 text-xs text-gray-400">
+            <ul className="space-y-2 text-xs text-[#333333]">
               {MORE_LINKS.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.to} className="hover:text-white hover:underline">{link.label}</Link>
+                  <Link to={link.to} className="hover:text-[#4D148C] hover:underline">{link.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 4: Follow FedEx */}
+          {/* Policy Center */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-gray-100">
+            <h4 className="text-xs font-black uppercase tracking-wider text-[#4D148C]">
+              POLICY CENTER
+            </h4>
+            <ul className="space-y-2 text-xs text-[#333333]">
+              {POLICY_LINKS.map((link) => (
+                <li key={link.label}>
+                  <Link to={link.to} className="hover:text-[#4D148C] hover:underline">{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Language */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-black uppercase tracking-wider text-[#4D148C]">
+              LANGUAGE
+            </h4>
+            <button
+              onClick={openLanguage}
+              className="flex items-center gap-2 text-xs font-bold text-[#333333] hover:text-[#4D148C]"
+            >
+              <Globe className="w-4 h-4 text-[#4D148C]" /> United States
+            </button>
+            <ul className="space-y-2 text-xs">
+              <li><span className="font-bold text-[#333333]">English</span></li>
+              <li>
+                <button onClick={openLanguage} className="text-[#333333] hover:text-[#4D148C] hover:underline">Español</button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Follow FedEx */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-black uppercase tracking-wider text-[#4D148C]">
               FOLLOW FEDEX
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -123,50 +138,27 @@ export const Footer: React.FC = () => {
                   onClick={() => window.open(href, '_blank')}
                   title={label}
                   aria-label={label}
-                  className="w-9 h-9 bg-gray-900 hover:bg-[#4D148C] text-gray-300 hover:text-white rounded-full border border-gray-700 transition-colors flex items-center justify-center"
+                  className="w-9 h-9 bg-[#4D148C] hover:bg-[#330066] text-white rounded-full transition-colors flex items-center justify-center"
                 >
                   <Icon />
                 </button>
               ))}
             </div>
-
-            <h4 className="text-xs font-black uppercase tracking-wider text-gray-100 pt-2">
-              FEDEX MOBILE APP
-            </h4>
-            <Link
-              to="/mobile"
-              className="inline-flex py-2 px-3 bg-gray-900 hover:bg-gray-800 text-white rounded border border-gray-700 text-xs font-bold items-center gap-2"
-            >
-              <Smartphone className="w-4 h-4 text-[#FF6600]" /> Download Mobile App
-            </Link>
           </div>
 
         </div>
+      </div>
 
-        {/* Legal Links & Back to Top */}
-        <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-            <span>© FedEx 1995-2026</span>
-            <span className="hidden md:inline">|</span>
-            <Link to="/about" className="hover:text-white hover:underline">Site Map</Link>
-            <span className="hidden md:inline">|</span>
-            <Link to="/about" className="hover:text-white hover:underline">Terms of Use</Link>
-            <span className="hidden md:inline">|</span>
-            <Link to="/support" className="hover:text-white hover:underline">Security & Fraud</Link>
-            <span className="hidden md:inline">|</span>
-            <Link to="/support" className="hover:text-white hover:underline">Privacy Policy</Link>
+      {/* Copyright strip */}
+      <div className="bg-[#4D148C] text-white">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+          <span>© FedEx 1995-2026</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <Link to="/about" className="hover:underline">Site Map</Link>
+            <span className="hidden md:inline text-white/50">|</span>
+            <Link to="/support" className="hover:underline">Cookie Consent</Link>
           </div>
-
-          <button
-            onClick={scrollToTop}
-            className="p-2.5 bg-gray-900 hover:bg-[#4D148C] text-white rounded-full border border-gray-700 transition-colors flex items-center justify-center"
-            title="Back to top"
-            aria-label="Back to top"
-          >
-            <ArrowUp className="w-4 h-4" />
-          </button>
         </div>
-
       </div>
     </footer>
   );

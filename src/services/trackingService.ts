@@ -42,6 +42,7 @@ export const trackingService = {
           if (snap.exists()) {
             const data = snap.data() as TrackingDetail;
             this.saveToHistory(data);
+            this.cacheTracked(data);
             return data;
           }
         }
@@ -60,6 +61,7 @@ export const trackingService = {
         const adminMatch = adminShipments.find(s => s.trackingNumber.toUpperCase() === cleanNum);
         if (adminMatch) {
           this.saveToHistory(adminMatch);
+          this.cacheTracked(adminMatch);
           return adminMatch;
         }
       }
@@ -69,6 +71,7 @@ export const trackingService = {
     const localShipment = this.getLocalShipment(cleanNum);
     if (localShipment) {
       this.saveToHistory(localShipment);
+      this.cacheTracked(localShipment);
       return localShipment;
     }
 
@@ -126,6 +129,24 @@ export const trackingService = {
       };
     } catch {
       return null;
+    }
+  },
+
+  /** Keep full details of every tracked shipment so the Live Map can show them. */
+  cacheTracked(detail: TrackingDetail) {
+    try {
+      const existing = this.getTracked().filter(t => t.trackingNumber !== detail.trackingNumber);
+      const updated = [detail, ...existing].slice(0, 20);
+      localStorage.setItem('fedex_tracked_shipments', JSON.stringify(updated));
+    } catch { /* ignore */ }
+  },
+
+  getTracked(): TrackingDetail[] {
+    try {
+      const data = localStorage.getItem('fedex_tracked_shipments');
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
     }
   },
 

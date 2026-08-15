@@ -5,6 +5,7 @@ import { shipService } from '../services/shipService';
 import { trackingService } from '../services/trackingService';
 import { activityService } from '../services/activityService';
 import { authService } from '../services/authService';
+import { emailService } from '../services/emailService';
 import { PageHero } from '../components/Page/PageHero';
 import { User, Package, MapPin, CreditCard, Bell, LogOut, Send, Plus } from 'lucide-react';
 
@@ -45,6 +46,13 @@ export const AccountPage: React.FC = () => {
     } finally {
       setBusy(false);
     }
+  };
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 110;
+    window.scrollTo({ top: y, behavior: 'smooth' });
   };
 
   const inputCls = "w-full h-12 px-3.5 text-sm border-2 border-gray-300 rounded focus:border-[#4D148C] outline-none font-medium";
@@ -129,15 +137,19 @@ export const AccountPage: React.FC = () => {
 
             <nav className="bg-white rounded-xl border border-gray-200 overflow-hidden text-sm">
               {[
-                { label: 'My Shipments', icon: Package },
-                { label: 'Recent Tracking', icon: MapPin },
-                { label: 'Addresses', icon: MapPin },
-                { label: 'Payment Methods', icon: CreditCard },
-                { label: 'Notifications', icon: Bell },
+                { label: 'My Shipments', icon: Package, target: 'my-shipments' },
+                { label: 'Recent Tracking', icon: MapPin, target: 'recent-tracking' },
+                { label: 'Addresses', icon: MapPin, target: 'addresses' },
+                { label: 'Payment Methods', icon: CreditCard, target: 'payment-methods' },
+                { label: 'Notifications', icon: Bell, target: 'notifications' },
               ].map((item) => (
-                <div key={item.label} className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100 last:border-b-0 text-gray-700 font-semibold hover:bg-purple-50 hover:text-[#4D148C] transition-colors cursor-pointer">
+                <button
+                  key={item.label}
+                  onClick={() => scrollToSection(item.target)}
+                  className="w-full flex items-center gap-2.5 px-4 py-3 border-b border-gray-100 last:border-b-0 text-left text-gray-700 font-semibold hover:bg-purple-50 hover:text-[#4D148C] transition-colors"
+                >
                   <item.icon className="w-4 h-4 text-[#4D148C]" /> {item.label}
-                </div>
+                </button>
               ))}
               <button
                 onClick={logout}
@@ -170,7 +182,7 @@ export const AccountPage: React.FC = () => {
             </div>
 
             {/* Shipments */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div id="my-shipments" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-24">
               <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider">My Shipments</h2>
                 <Link to="/shipping/ship" className="text-xs font-bold text-[#0068A8] hover:underline">+ New shipment</Link>
@@ -206,10 +218,16 @@ export const AccountPage: React.FC = () => {
             </div>
 
             {/* Tracking history */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div id="recent-tracking" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-24">
               <div className="px-5 py-4 border-b border-gray-200">
                 <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider">Recent Tracking</h2>
               </div>
+              {history.length === 0 ? (
+                <div className="p-10 text-center">
+                  <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500">Nothing tracked yet. <Link to="/tracking" className="text-[#0068A8] font-bold hover:underline">Track a package</Link>.</p>
+                </div>
+              ) : (
               <div className="divide-y divide-gray-100">
                 {history.map((item, idx) => (
                   <Link
@@ -221,6 +239,83 @@ export const AccountPage: React.FC = () => {
                     <span className="text-xs text-gray-500">{item.status} • {item.date}</span>
                   </Link>
                 ))}
+              </div>
+              )}
+            </div>
+
+            {/* Addresses */}
+            <div id="addresses" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-24">
+              <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider">Addresses</h2>
+                <Link to="/shipping/ship" className="text-xs font-bold text-[#0068A8] hover:underline">+ Add address</Link>
+              </div>
+              <div className="divide-y divide-gray-100">
+                {shipments.length === 0 ? (
+                  <div className="p-10 text-center">
+                    <MapPin className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-sm text-gray-500">No saved addresses yet. Addresses are saved when you create a shipment.</p>
+                  </div>
+                ) : (
+                  Array.from(new Set(shipments.map(s => `${s.fromCity}|${s.toCity}`))).map((pair, idx) => {
+                    const [from, to] = pair.split('|');
+                    return (
+                      <div key={idx} className="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                          <div className="text-sm font-bold text-gray-800">{to}</div>
+                          <div className="text-xs text-gray-500">Ship to • from {from}</div>
+                        </div>
+                        <Link to="/shipping/ship" className="text-xs font-bold text-[#0068A8] hover:underline">Use again →</Link>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Payment methods */}
+            <div id="payment-methods" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-24">
+              <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider">Payment Methods</h2>
+                <Link to="/shipping/ship" className="text-xs font-bold text-[#0068A8] hover:underline">+ Add card</Link>
+              </div>
+              <div className="p-10 text-center">
+                <CreditCard className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                <p className="text-sm text-gray-500">
+                  No payment methods on file. Cards are charged securely at checkout — create a shipment to save one.
+                </p>
+                <Link to="/shipping/ship" className="inline-block mt-3 py-2.5 px-5 bg-[#FF6200] hover:bg-[#E05500] text-white font-bold text-xs rounded transition-colors">
+                  Create a Shipment
+                </Link>
+              </div>
+            </div>
+
+            {/* Notifications */}
+            <div id="notifications" className="bg-white rounded-xl border border-gray-200 overflow-hidden scroll-mt-24">
+              <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider">Notifications</h2>
+                <Link to="/delivery-manager" className="text-xs font-bold text-[#0068A8] hover:underline">Manage delivery alerts →</Link>
+              </div>
+              <div className="p-5 space-y-3 text-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="font-bold text-gray-800">Email tracking updates</div>
+                    <div className="text-xs text-gray-500 mt-0.5">
+                      {emailService.isConfigured()
+                        ? 'Sender and recipient get emails when a shipment is created or updated.'
+                        : 'Inactive — configure EmailJS (VITE_EMAILJS_* env vars) to enable.'}
+                    </div>
+                  </div>
+                  <span className={`shrink-0 text-[10px] font-black uppercase px-2.5 py-1 rounded-full ${emailService.isConfigured() ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                    {emailService.isConfigured() ? 'On' : 'Off'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                  <div>
+                    <div className="font-bold text-gray-800">Delivery Manager alerts</div>
+                    <div className="text-xs text-gray-500 mt-0.5">Set home delivery preferences and get live arrival alerts.</div>
+                  </div>
+                  <Link to="/delivery-manager" className="shrink-0 text-xs font-bold text-[#0068A8] hover:underline">Set up</Link>
+                </div>
               </div>
             </div>
 

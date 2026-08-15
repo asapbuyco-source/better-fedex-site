@@ -38,6 +38,7 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminShipmentFormPage } from './pages/admin/AdminShipmentFormPage';
 import { AdminActivityPage } from './pages/admin/AdminActivityPage';
 import { LiveMapPage, AdminLiveMapPage } from './pages/LiveMapPage';
+import { seedSampleShipment } from './services/adminService';
 
 const NotFound: React.FC = () => (
   <div className="max-w-2xl mx-auto px-4 py-24 text-center">
@@ -53,6 +54,10 @@ const NotFound: React.FC = () => (
 );
 
 export function App() {
+  React.useEffect(() => {
+    seedSampleShipment();
+  }, []);
+
   return (
     <Routes>
       <Route element={<SiteLayout />}>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NAVIGATION_ITEMS } from '../../data/navigation';
 import { MegaMenu } from './MegaMenu';
-import { ChevronDown, Search, User, Globe, LogOut } from 'lucide-react';
+import { ChevronDown, Search, User, LogOut } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -14,24 +14,24 @@ export const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   activeMenu,
   setActiveMenu
 }) => {
-  const { currentUser, logout, openAuth, openSearch, openLanguage } = useApp();
+  const { currentUser, logout, openAuth, openSearch } = useApp();
   const navigate = useNavigate();
-  const activeItem = NAVIGATION_ITEMS.find(item => item.id === activeMenu);
 
   return (
-    <div className="relative bg-white border-b border-gray-200">
-      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 flex items-center justify-between h-[72px]">
-        
+    <div className="relative hidden lg:block bg-[#4D148C]">
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-6 flex items-center justify-between h-[96px]">
+
         {/* Left: Brand Logo & Main Nav */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
           <Link to="/" onClick={() => setActiveMenu(null)} className="flex items-center group focus:outline-none" aria-label="FedEx Home">
-            <div className="font-black text-3xl sm:text-4xl tracking-tighter flex items-center leading-none">
-              <span className="text-[#4D148C]">Fed</span>
-              <span className="text-[#FF6600]">Ex</span>
-            </div>
+            <img
+              src="/images/fedex-logo.png"
+              alt="FedEx"
+              className="h-10 w-auto group-hover:opacity-90 transition-opacity"
+            />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1" aria-label="Primary Navigation">
+          <nav className="flex items-center" aria-label="Primary Navigation">
             {NAVIGATION_ITEMS.map((item) => {
               const isOpen = activeMenu === item.id;
               return (
@@ -39,19 +39,27 @@ export const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
                   <button
                     onClick={() => setActiveMenu(isOpen ? null : item.id)}
                     aria-expanded={isOpen}
-                    className={`px-3 py-2 text-sm font-bold flex items-center gap-1 rounded transition-colors ${
+                    className={`h-[96px] px-4 text-base font-bold flex items-center gap-1.5 transition-colors ${
                       isOpen
-                        ? 'text-[#4D148C] bg-purple-50'
-                        : 'text-gray-800 hover:text-[#4D148C] hover:bg-gray-100'
+                        ? 'text-white bg-white/15 shadow-[inset_0_-4px_0_0_#ffffff]'
+                        : 'text-white hover:bg-white/10'
                     }`}
                   >
                     {item.label}
                     <ChevronDown
                       className={`w-4 h-4 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-[#FF6600]' : 'text-gray-400'
+                        isOpen ? 'rotate-180 text-[#FF6600]' : 'text-white/70'
                       }`}
                     />
                   </button>
+                  <MegaMenu
+                    item={item}
+                    isOpen={isOpen}
+                    onNavigate={(path) => {
+                      setActiveMenu(null);
+                      navigate(path);
+                    }}
+                  />
                 </div>
               );
             })}
@@ -59,72 +67,42 @@ export const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         </div>
 
         {/* Right Utility Buttons */}
-        <div className="hidden lg:flex items-center gap-3">
-          
-          <button
-            onClick={openLanguage}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-700 hover:text-[#4D148C] hover:bg-gray-100 rounded transition-colors"
-          >
-            <Globe className="w-4 h-4 text-[#4D148C]" />
-            <span>US - English</span>
-          </button>
-
-          <button
-            onClick={openSearch}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-gray-700 hover:text-[#4D148C] hover:bg-gray-100 rounded transition-colors"
-            aria-label="Search fedex.com"
-          >
-            <Search className="w-4 h-4 text-[#4D148C]" />
-            <span>Search</span>
-          </button>
-
+        <div className="flex items-center gap-1">
           {currentUser ? (
-            <div className="flex items-center gap-2 pl-2 border-l border-gray-300">
+            <div className="flex items-center gap-1">
               <Link
                 to="/account"
-                className="flex items-center gap-2 bg-purple-50 text-[#4D148C] px-3 py-1.5 rounded text-xs font-bold hover:bg-purple-100 transition-colors"
+                className="flex items-center gap-2 bg-white/15 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-white/25 transition-colors"
               >
                 <User className="w-4 h-4" />
                 <span className="max-w-[100px] truncate">{currentUser}</span>
               </Link>
               <button
                 onClick={logout}
-                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                className="p-2 text-white/80 hover:text-white hover:bg-white/15 rounded-full transition-colors"
                 title="Log out"
               >
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2 pl-2 border-l border-gray-300">
-              <button
-                onClick={() => openAuth('login')}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#4D148C] hover:underline px-2 py-1.5"
-              >
-                <User className="w-4 h-4" /> Sign In
-              </button>
-              <Link
-                to="/account?mode=signup"
-                className="px-3.5 py-1.5 bg-[#FF6600] hover:bg-[#E05500] text-white font-bold text-xs rounded transition-colors shadow-xs"
-              >
-                Sign Up
-              </Link>
-            </div>
+            <button
+              onClick={() => openAuth('login')}
+              className="flex items-center gap-1.5 text-sm font-bold text-white hover:underline px-3 py-2"
+            >
+              <User className="w-4 h-4" /> SIGN UP / LOG IN
+            </button>
           )}
+
+          <button
+            onClick={openSearch}
+            className="p-2 text-white hover:bg-white/15 rounded-full transition-colors"
+            aria-label="Search fedex.com"
+          >
+            <Search className="w-5 h-5" />
+          </button>
         </div>
       </div>
-
-      {activeItem && (
-        <MegaMenu
-          item={activeItem}
-          isOpen={true}
-          onClose={() => setActiveMenu(null)}
-          onNavigate={(path) => {
-            setActiveMenu(null);
-            navigate(path);
-          }}
-        />
-      )}
     </div>
   );
 };

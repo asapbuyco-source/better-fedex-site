@@ -49,7 +49,7 @@ export const PickupPage: React.FC = () => {
         breadcrumb={[{ label: 'Shipping', to: '/shipping' }, { label: 'Schedule a Pickup' }]}
       >
         <div
-          className="rounded-xl h-40 md:h-52 bg-cover bg-center border-4 border-white/20 shadow-lg"
+          className="rounded-xl h-40 md:h-52 bg-cover bg-center border border-gray-200 shadow-lg"
           style={{ backgroundImage: "url('/images/fedex-truck.jpg')" }}
           role="img"
           aria-label="FedEx truck on route"

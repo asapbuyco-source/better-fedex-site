@@ -44,7 +44,7 @@ export const LocationsPage: React.FC = () => {
         breadcrumb={[{ label: 'Locations' }]}
       >
         <div
-          className="rounded-xl h-40 md:h-52 bg-cover bg-center border-4 border-white/20 shadow-lg mb-4"
+          className="rounded-xl h-40 md:h-52 bg-cover bg-center border border-gray-200 shadow-lg mb-4"
           style={{ backgroundImage: "url('/images/fedex-courier.jpg')" }}
           role="img"
           aria-label="FedEx courier at a delivery location"
@@ -55,7 +55,7 @@ export const LocationsPage: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Zip or City, State"
-            className="flex-1 h-12 px-4 text-sm border-2 border-transparent rounded focus:border-white outline-none font-medium text-gray-800 bg-white"
+            className="flex-1 h-12 px-4 text-sm border-2 border-gray-300 rounded focus:border-[#4D148C] outline-none font-medium text-gray-800 bg-white"
           />
           <button
             type="submit"

@@ -43,7 +43,7 @@ export const FreightPage: React.FC = () => {
         breadcrumb={[{ label: 'Shipping', to: '/shipping' }, { label: 'Freight' }]}
       >
         <div
-          className="rounded-xl h-40 md:h-52 bg-cover bg-center border-4 border-white/20 shadow-lg"
+          className="rounded-xl h-40 md:h-52 bg-cover bg-center border border-gray-200 shadow-lg"
           style={{ backgroundImage: "url('/images/fedex-warehouse.jpg')" }}
           role="img"
           aria-label="FedEx freight warehouse with pallets"

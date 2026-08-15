@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { TopBar } from './TopBar';
 import { DesktopNavigation } from './DesktopNavigation';
 import { MobileNavigation } from './MobileNavigation';
 
@@ -9,7 +8,6 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 bg-white shadow-xs">
-      <TopBar />
       <DesktopNavigation
         activeMenu={activeMenu}
         setActiveMenu={setActiveMenu}

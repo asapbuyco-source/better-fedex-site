@@ -73,7 +73,7 @@ export const SupportPage: React.FC = () => {
         breadcrumb={[{ label: 'Support' }]}
       >
         <div
-          className="rounded-xl h-36 md:h-44 bg-cover bg-center border-4 border-white/20 shadow-lg mb-4"
+          className="rounded-xl h-36 md:h-44 bg-cover bg-center border border-gray-200 shadow-lg mb-4"
           style={{ backgroundImage: "url('/images/fedex-courier.jpg')" }}
           role="img"
           aria-label="FedEx customer support"
@@ -85,7 +85,7 @@ export const SupportPage: React.FC = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search help articles — try 'where is my package'"
-            className="w-full h-14 pl-12 pr-4 text-sm border-2 border-transparent rounded-lg focus:border-white outline-none font-medium text-gray-800 bg-white"
+            className="w-full h-14 pl-12 pr-4 text-sm border-2 border-gray-300 rounded-lg focus:border-[#4D148C] outline-none font-medium text-gray-800 bg-white"
           />
         </div>
       </PageHero>

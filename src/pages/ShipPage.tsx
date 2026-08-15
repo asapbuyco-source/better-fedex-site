@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { shipService, ShipmentRecord } from '../services/shipService';
 import { activityService } from '../services/activityService';
+import { emailService } from '../services/emailService';
 import { PageHero } from '../components/Page/PageHero';
 import { Send, Printer, CheckCircle2, Package, ArrowRight, Download } from 'lucide-react';
 
@@ -11,9 +12,10 @@ interface AddressForm {
   city: string;
   zip: string;
   phone: string;
+  email: string;
 }
 
-const EMPTY_ADDRESS: AddressForm = { name: '', street: '', city: '', zip: '', phone: '' };
+const EMPTY_ADDRESS: AddressForm = { name: '', street: '', city: '', zip: '', phone: '', email: '' };
 
 const SERVICES = [
   { name: 'FedEx First Overnight®', eta: 'Tomorrow by 8:00 AM', base: 78 },
@@ -76,7 +78,7 @@ export const ShipPage: React.FC = () => {
   const selectedService = SERVICES.find(s => s.name === service) || SERVICES[1];
   const price = presetPrice ? Number(presetPrice) : Math.round((selectedService.base + weight * 3.2) * 100) / 100;
 
-  const addressValid = (a: AddressForm) => a.name.trim() && a.street.trim() && a.city.trim() && /^\d{5}/.test(a.zip);
+  const addressValid = (a: AddressForm) => a.name.trim() && a.street.trim() && a.city.trim() && /^\d{5}/.test(a.zip) && /^\S+@\S+\.\S+$/.test(a.email);
 
   const inputCls = "w-full h-11 px-3.5 text-sm border-2 border-gray-300 rounded focus:border-[#4D148C] outline-none font-medium";
   const labelCls = "text-xs font-bold text-gray-700 uppercase tracking-wider block mb-1.5";
@@ -99,7 +101,11 @@ export const ShipPage: React.FC = () => {
         <label className={labelCls}>ZIP Code</label>
         <input type="text" value={value.zip} onChange={(e) => onChange({ ...value, zip: e.target.value })} className={inputCls} placeholder="12345" maxLength={10} />
       </div>
-      <div className="sm:col-span-2">
+      <div>
+        <label className={labelCls}>Email (for tracking notifications)</label>
+        <input type="email" value={value.email} onChange={(e) => onChange({ ...value, email: e.target.value })} className={inputCls} placeholder="name@example.com" />
+      </div>
+      <div>
         <label className={labelCls}>Phone (for delivery notifications)</label>
         <input type="tel" value={value.phone} onChange={(e) => onChange({ ...value, phone: e.target.value })} className={inputCls} placeholder="(555) 123-4567" />
       </div>
@@ -112,10 +118,12 @@ export const ShipPage: React.FC = () => {
       fromStreet: from.street,
       fromCity: from.city,
       fromZip: from.zip,
+      fromEmail: from.email,
       toName: to.name,
       toStreet: to.street,
       toCity: to.city,
       toZip: to.zip,
+      toEmail: to.email,
       service,
       packaging,
       weightLbs: weight,
@@ -132,6 +140,20 @@ export const ShipPage: React.FC = () => {
       `${from.name} (${from.city} ${from.zip}) → ${to.name} (${to.city} ${to.zip})`,
       { service, weightLbs: weight, price: `$${price.toFixed(2)}` }
     );
+    void emailService.notifyShipment({
+      trackingNumber: record.trackingNumber,
+      status: 'Pending',
+      statusDescription: record.isReturn ? 'Return label created - awaiting drop-off' : 'Label created - awaiting pickup or drop-off',
+      senderName: record.fromName,
+      senderEmail: record.fromEmail || '',
+      recipientName: record.toName,
+      recipientEmail: record.toEmail || '',
+      origin: record.fromCity,
+      destination: record.toCity,
+      service: record.service,
+      eta: record.deliveryEstimate,
+      action: 'created'
+    });
   };
 
   const steps = [
@@ -278,6 +300,7 @@ export const ShipPage: React.FC = () => {
                 <h2 className="text-base font-bold text-emerald-900">Shipment created successfully!</h2>
                 <p className="text-xs text-emerald-800 mt-0.5">
                   {isReturnFlow ? 'Your return label is ready. Email a copy to your customer or print it now.' : 'Your label is ready. Print it and attach to your package.'}
+                  {emailService.isConfigured() && ' Tracking notifications were emailed to the sender and recipient.'}
                 </p>
               </div>
             </div>

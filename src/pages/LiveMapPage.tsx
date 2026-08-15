@@ -19,7 +19,7 @@ interface MapShipment {
   route: { lat: number; lng: number }[];
   progress: number;
   speed: number;
-  source: 'admin' | 'demo' | 'customer';
+  source: 'admin' | 'tracked' | 'customer';
   eta: string;
 }
 
@@ -86,6 +86,14 @@ function toCoords(location: string, seed: string) {
 
 function buildShipments(): MapShipment[] {
   const out: MapShipment[] = [];
+  const seen = new Set<string>();
+
+  const push = (s: MapShipment) => {
+    if (!seen.has(s.code)) {
+      seen.add(s.code);
+      out.push(s);
+    }
+  };
 
   for (const s of adminService.getAll()) {
     const o = getFacilityByCode(s.originCode);
@@ -95,7 +103,7 @@ function buildShipments(): MapShipment[] {
     const route = isExpress && o.code !== 'MEM' && d.code !== 'MEM'
       ? [{ lat: o.lat, lng: o.lng }, { lat: mem.lat, lng: mem.lng }, { lat: d.lat, lng: d.lng }]
       : [{ lat: o.lat, lng: o.lng }, { lat: d.lat, lng: d.lng }];
-    out.push({
+    push({
       code: s.trackingNumber,
       status: s.status,
       statusColor: s.statusColor,
@@ -112,13 +120,18 @@ function buildShipments(): MapShipment[] {
 
   for (const r of shipService.getShipments()) {
     const detail = trackingService.getLocalShipment(r.trackingNumber);
-    if (detail) out.push(buildFromDetail(detail, 'customer'));
+    if (detail) push(buildFromDetail(detail, 'customer'));
+  }
+
+  // Anything the user has tracked (admin, Firestore, or local) also shows on the map
+  for (const d of trackingService.getTracked()) {
+    push(buildFromDetail(d, 'tracked'));
   }
 
   return out;
 }
 
-function buildFromDetail(d: TrackingDetail, source: 'customer'): MapShipment {
+function buildFromDetail(d: TrackingDetail, source: 'customer' | 'tracked'): MapShipment {
   const o = toCoords(d.origin, d.origin + d.trackingNumber);
   const dest = toCoords(d.destination, d.destination + d.trackingNumber);
   const isExpress = !d.service.includes('Ground');

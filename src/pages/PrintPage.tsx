@@ -60,7 +60,7 @@ export const PrintPage: React.FC = () => {
         breadcrumb={[{ label: 'Design & Print' }]}
       >
         <div
-          className="rounded-xl h-40 md:h-52 bg-cover bg-center border-4 border-white/20 shadow-lg"
+          className="rounded-xl h-40 md:h-52 bg-cover bg-center border border-gray-200 shadow-lg"
           style={{ backgroundImage: "url('/images/fedex-print.jpg')" }}
           role="img"
           aria-label="FedEx Office printing services"

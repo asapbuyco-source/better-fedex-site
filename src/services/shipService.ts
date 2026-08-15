@@ -4,8 +4,10 @@ export interface ShipmentRecord {
   trackingNumber: string;
   fromName: string;
   fromCity: string;
+  fromEmail?: string;
   toName: string;
   toCity: string;
+  toEmail?: string;
   service: string;
   packaging: string;
   weightLbs: number;
@@ -20,10 +22,12 @@ export interface CreateShipmentInput {
   fromStreet: string;
   fromCity: string;
   fromZip: string;
+  fromEmail?: string;
   toName: string;
   toStreet: string;
   toCity: string;
   toZip: string;
+  toEmail?: string;
   service: string;
   packaging: string;
   weightLbs: number;
@@ -45,8 +49,10 @@ export const shipService = {
       trackingNumber: generateTrackingNumber(),
       fromName: input.fromName,
       fromCity: `${input.fromCity.toUpperCase()} ${input.fromZip}`,
+      fromEmail: input.fromEmail,
       toName: input.toName,
       toCity: `${input.toCity.toUpperCase()} ${input.toZip}`,
+      toEmail: input.toEmail,
       service: input.service,
       packaging: input.packaging,
       weightLbs: input.weightLbs,

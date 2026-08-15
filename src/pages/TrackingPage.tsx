@@ -160,6 +160,7 @@ export const TrackingPage: React.FC = () => {
       setNotFoundMsg(`No shipment found for "${num}". Check the number and try again.`);
     }
     setLoading(false);
+    scrollToResults();
   };
 
   const trackMulti = async () => {
@@ -173,6 +174,18 @@ export const TrackingPage: React.FC = () => {
     }
     setResults(details);
     setLoading(false);
+    scrollToResults();
+  };
+
+  const resultsRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToResults = () => {
+    setTimeout(() => {
+      const el = resultsRef.current;
+      if (!el) return;
+      const y = el.getBoundingClientRect().top + window.scrollY - 110;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }, 60);
   };
 
   useEffect(() => {
@@ -192,7 +205,7 @@ export const TrackingPage: React.FC = () => {
         breadcrumb={[{ label: 'Tracking' }]}
       >
         <div
-          className="rounded-xl h-40 md:h-52 bg-cover bg-center border-4 border-white/20 shadow-lg"
+          className="rounded-xl h-40 md:h-52 bg-cover bg-center border border-gray-200 shadow-lg"
           style={{ backgroundImage: "url('/images/fedex-delivery.jpg')" }}
           role="img"
           aria-label="FedEx courier delivering a package"
@@ -277,7 +290,7 @@ export const TrackingPage: React.FC = () => {
           </div>
 
           {/* Right: Results */}
-          <div className="lg:col-span-8 space-y-6">
+          <div ref={resultsRef} className="lg:col-span-8 space-y-6">
             {loading && (
               <div className="bg-white border border-gray-200 rounded-xl p-16 text-center text-gray-500 font-medium">
                 Tracking your shipment...
