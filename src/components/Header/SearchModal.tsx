@@ -77,7 +77,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
       <div className="relative bg-white w-full max-w-3xl rounded-lg shadow-2xl border border-gray-200 overflow-hidden z-10">
         <div className="p-4 md:p-6 border-b border-gray-200 flex items-center gap-3 bg-[#FAFAFA]">
-          <Search className="w-6 h-6 text-[#4D148C] shrink-0" />
+          <div className="w-12 h-12 rounded-lg bg-[#4D148C] flex items-center justify-center shrink-0 shadow-sm">
+            <img src="/images/fedex-logo.png" alt="FedEx" className="h-5 w-auto" />
+          </div>
           <input
             ref={inputRef}
             type="text"
