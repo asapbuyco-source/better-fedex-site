@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { adminService, AdminShipment, generateTrackingNumber } from '../../services/adminService';
 import { TrackingEvent } from '../../services/trackingService';
 import { emailService } from '../../services/emailService';
-import { FACILITIES, getFacilityByCode } from '../../data/facilities';
+import { FACILITIES, getFacilityByCode, facilitiesByState } from '../../data/facilities';
 import { Save, ArrowLeft, Plus, Trash2, RefreshCw, Zap } from 'lucide-react';
 
 const SERVICES = [
@@ -68,6 +68,16 @@ export const AdminShipmentFormPage: React.FC = () => {
   const labelCls = "text-[11px] font-bold text-gray-600 uppercase tracking-wider block mb-1";
 
   const set = <K extends keyof AdminShipment>(key: K, value: AdminShipment[K]) => setForm(f => ({ ...f, [key]: value }));
+
+  const FacilityOptions: React.FC = () => (
+    <>
+      {Object.entries(facilitiesByState()).map(([state, facs]) => (
+        <optgroup key={state} label={state}>
+          {facs.map(f => <option key={f.code} value={f.code}>{f.code} — {f.city}</option>)}
+        </optgroup>
+      ))}
+    </>
+  );
 
   const handleStatusChange = (status: AdminShipment['status']) => {
     const opt = STATUS_OPTIONS.find(s => s.status === status)!;
@@ -263,21 +273,21 @@ export const AdminShipmentFormPage: React.FC = () => {
           <div>
             <label className={labelCls}>Origin Facility (Code)</label>
             <select value={form.originCode} onChange={(e) => handleFacility('originCode', e.target.value)} className={inputCls}>
-              {FACILITIES.map(f => <option key={f.code} value={f.code}>{f.code} — {f.city}, {f.state}</option>)}
+              <FacilityOptions />
             </select>
           </div>
 
           <div>
             <label className={labelCls}>Destination Facility (Code)</label>
             <select value={form.destCode} onChange={(e) => handleFacility('destCode', e.target.value)} className={inputCls}>
-              {FACILITIES.map(f => <option key={f.code} value={f.code}>{f.code} — {f.city}, {f.state}</option>)}
+              <FacilityOptions />
             </select>
           </div>
 
           <div>
             <label className={labelCls}>Current Location (Code)</label>
             <select value={form.currentCode} onChange={(e) => handleFacility('currentCode', e.target.value)} className={inputCls}>
-              {FACILITIES.map(f => <option key={f.code} value={f.code}>{f.code} — {f.city}, {f.state}</option>)}
+              <FacilityOptions />
             </select>
           </div>
 
