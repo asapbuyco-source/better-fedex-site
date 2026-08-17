@@ -13,6 +13,7 @@ export const FACILITIES: Facility[] = [
   { code: 'HSV', city: 'Huntsville', state: 'AL', lat: 34.7304, lng: -86.5861 },
   { code: 'MOB', city: 'Mobile', state: 'AL', lat: 30.6954, lng: -88.0399 },
   { code: 'MGM', city: 'Montgomery', state: 'AL', lat: 32.3792, lng: -86.3077 },
+  { code: 'VGD', city: 'Valley Grande', state: 'AL', lat: 32.5091, lng: -87.0256 },
   // Alaska
   { code: 'ANC', city: 'Anchorage', state: 'AK', lat: 61.2181, lng: -149.9003 },
   { code: 'FAI', city: 'Fairbanks', state: 'AK', lat: 64.8378, lng: -147.7164 },
