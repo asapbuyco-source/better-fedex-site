@@ -39,7 +39,6 @@ import { AdminShipmentFormPage } from './pages/admin/AdminShipmentFormPage';
 import { AdminActivityPage } from './pages/admin/AdminActivityPage';
 import { LiveMapPage, AdminLiveMapPage } from './pages/LiveMapPage';
 import { seedSampleShipment } from './services/adminService';
-import { BotGate } from './components/BotGate';
 
 const NotFound: React.FC = () => (
   <div className="max-w-2xl mx-auto px-4 py-24 text-center">
@@ -60,8 +59,7 @@ export function App() {
   }, []);
 
   return (
-    <BotGate>
-      <Routes>
+    <Routes>
         <Route element={<SiteLayout />}>
           <Route path="/" element={<Home />} />
 
@@ -120,7 +118,6 @@ export function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
-    </BotGate>
   );
 }
 
